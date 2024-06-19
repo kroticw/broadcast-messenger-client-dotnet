@@ -57,17 +57,17 @@ public class UdpTcpClient
 
     private void ParseAndAction(string receivedMessage) {
         string[] message = receivedMessage.Split(";;;");
-        if(message[0] == "server" && message[1].Length > 2){
+        if(message[0] == "server" && message[1].Length == 2){
             switch (message[1][..2])
             {
                 case "nu": //новый пользователь
-                    MainWindow.Instance.AppendUserInUserList(message[0]);
+                    MainWindow.Instance.AppendUserInUserList(message[2]);
                     break;
                 case "du": //пользователь отключился
-                    MainWindow.Instance.DeleteUserFromUserList(message[0]);
+                    MainWindow.Instance.DeleteUserFromUserList(message[2]);
                     break;
                 default:
-                    MainWindow.Instance.AppendChatMessage($"[{message[0]}]:\n{message[1]}");
+                    MainWindow.Instance.AppendChatMessage($"[{message[2]}]:\n{message[1]}");
                     break;
             }
         }
