@@ -125,6 +125,7 @@ public partial class MainWindow : Window
         Instance = this;
         UsersList.ItemsSource = Users;
         SendButton.IsDefault=true;
+        Chat.Text = "Введите юзернейм";
         UsersList.IsEnabled=false;
     }
 
