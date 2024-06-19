@@ -44,9 +44,10 @@ public class UdpTcpClient
     private async Task BroadcastConnectionInfo()
     {
         IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Broadcast, udpPort);
-        byte[] data = Encoding.UTF8.GetBytes($"{Program.SelfUsername};;;{tcpPort}");
+        
         udpClient.EnableBroadcast = true;
         while(Program.SelfUsername == "") {}
+        byte[] data = Encoding.UTF8.GetBytes($"{Program.SelfUsername};;;{tcpPort}");
         while (!tcpListener.Pending())
         {
             udpClient.Send(data, data.Length, ipEndPoint);
