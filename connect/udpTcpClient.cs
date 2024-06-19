@@ -44,7 +44,7 @@ public class UdpTcpClient
     private async Task BroadcastConnectionInfo()
     {
         IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Broadcast, udpPort);
-        byte[] data = Encoding.UTF8.GetBytes($"CONNECT:{Dns.GetHostName()}:{tcpPort}");
+        byte[] data = Encoding.UTF8.GetBytes($"CONNECT:{Program.SelfUsername}:{tcpPort}");
         udpClient.EnableBroadcast = true;
 
         while (!tcpListener.Pending())
@@ -118,7 +118,7 @@ public class UdpTcpClient
             return;
         }
         try{
-            string mes = $"to:{username};;;{message}";
+            string mes = $"{Program.SelfUsername};;;{username};;;{message}";
             byte[] data = Encoding.UTF8.GetBytes(mes);
             await tcpStream.WriteAsync(data, 0, data.Length);
             Console.WriteLine("Сообщение отправлено: " + mes);

@@ -9,6 +9,7 @@ namespace broadcast_messenger_client_dotnet;
 class Program
 {
     public static UdpTcpClient client = new UdpTcpClient();
+    public static string SelfUsername = "Неопознанный";
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
     // yet and stuff might break.

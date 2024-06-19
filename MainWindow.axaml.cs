@@ -82,6 +82,14 @@ public partial class MainWindow : Window
             Message.Text = "";
             ChatScroller.ScrollToEnd();
         }
+        else if (Chat.Text == "Введите юзернейм" && Message.Text != "")
+        {
+            Program.SelfUsername = Message.Text;
+            Message.Text = "";
+            Chat.Text = "";
+            Message.IsEnabled = false;
+            SendButton.IsEnabled = false;
+        }
     }
 
     public void UsersList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -117,8 +125,7 @@ public partial class MainWindow : Window
         Instance = this;
         UsersList.ItemsSource = Users;
         SendButton.IsDefault=true;
-        SendButton.IsEnabled=false;
-        Message.IsEnabled=false;
+        UsersList.IsEnabled=false;
     }
 
 }
