@@ -1,0 +1,72 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:models="clr-namespace:models"
+        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
+        x:Class="broadcast_messenger_client_dotnet.MainWindow"
+        Title="Broadcast Messenger"
+        Background="#3d3d3d" >
+<Grid>
+    <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="300"/>
+        <ColumnDefinition Width="600*"/>
+    </Grid.ColumnDefinitions>
+
+
+    <Grid Grid.Column="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Border Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Top" CornerRadius="50"
+        BorderBrush="Black" BorderThickness="0.5" Margin="10,10,10,10" Background="#242424">
+            <StackPanel >
+                <Label Content="Собеседники в сети" HorizontalAlignment="Center"  Margin="10,10,10,10" FontSize="20"/>
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="1" BorderBrush="Black" BorderThickness="0.5" VerticalAlignment="Top">
+            <StackPanel Orientation="Vertical">
+                <ListBox x:Name="UsersList" VerticalAlignment="Top" SelectionChanged="UsersList_SelectionChanged">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="models:User">
+                            <TextBlock Text="{Binding Username}"/>
+                        </DataTemplate>    
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+        </Border>
+    </Grid>
+    
+
+    <Grid Grid.Column="1">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <Border HorizontalAlignment="Stretch" 
+            BorderBrush="Black" BorderThickness="0.5"  Grid.Row="0">
+            <Label x:Name="UsernameDialog" />
+        </Border>
+
+        <Border HorizontalAlignment="Stretch" 
+            BorderBrush="Black" BorderThickness="0.5"  Grid.Row="1">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" x:Name="ChatScroller">
+                <StackPanel Grid.Row="1"  HorizontalAlignment="Stretch" Background="#242424">
+                    <TextBlock x:Name="Chat" TextWrapping="Wrap"/>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+        <Border HorizontalAlignment="Stretch" 
+            BorderBrush="Black" BorderThickness="0.5"  Grid.Row="2">
+            <StackPanel Grid.Row="2" Height="50"  Orientation="Horizontal" HorizontalAlignment="Center">
+                <TextBox CornerRadius="30" TextWrapping="Wrap" x:Name="Message" Width="600" HorizontalAlignment="Center" Margin="10,10,0,10"/>
+                <Button CornerRadius="30" x:Name="SendButton" Width="30" Content="S" Click="ClickSendButtonHandler" Margin="-30,10,10,10"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Grid>
+</Window>
