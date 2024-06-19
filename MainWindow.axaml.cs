@@ -40,7 +40,10 @@ public partial class MainWindow : Window
                 i++;
             }
             if(inList) Users[i-1].isOnline = true;
-            else Users.Add(new User(username, true));
+            else {
+                Users.Add(new User(username, true));
+                UsersScroller.ScrollToEnd();
+            }
         });
     }
 
@@ -70,11 +73,12 @@ public partial class MainWindow : Window
     }
 
     public async void ClickSendButtonHandler(object? sender, RoutedEventArgs args) {
-        if (Message.Text != "")
+        if (Message.Text != "" && SelectedUser != null && SelectedUser.isOnline)
         {
             string ?mes = Message.Text;
             Chat.Text += $"[ВЫ]:\n{mes}\n";
-            await Program.client.SendMessageToUserByUsername(mes, "asdas");
+            SelectedUser.AddInHistory($"[ВЫ]:\n{mes}\n");
+            await Program.client.SendMessageToUserByUsername(mes, SelectedUser.Username);
             Message.Text = "";
             ChatScroller.ScrollToEnd();
         }
@@ -84,10 +88,17 @@ public partial class MainWindow : Window
     {
         if (UsersList.SelectedItem is User selectedUser)
         {
-            if(selectedUser.isOnline)
+            UsernameDialog.Content = selectedUser.Username; // Обновление Label с именем пользователя
+            UpdateChatForSelectedUser(selectedUser); // Обновление чата для выбранного пользователя
+            if(!selectedUser.isOnline)
             {
-                UsernameDialog.Content = selectedUser.Username; // Обновление Label с именем пользователя
-                UpdateChatForSelectedUser(selectedUser); // Обновление чата для выбранного пользователя
+                SendButton.IsEnabled=false;
+                Message.IsEnabled=false;
+            }
+            else 
+            {
+                SendButton.IsEnabled=true;
+                Message.IsEnabled=true;
             }
         }
     }
@@ -96,7 +107,7 @@ public partial class MainWindow : Window
     {
         // Здесь должна быть логика для обновления TextBlock `Chat` на основе выбранного пользователя
         // Например, вы можете загрузить историю сообщений для этого пользователя
-        Chat.Text = $"История сообщений с {user.Username}:\n";
+        Chat.Text = user.History;
         // Добавьте реальные сообщения, если они есть
     }
 
@@ -106,19 +117,8 @@ public partial class MainWindow : Window
         Instance = this;
         UsersList.ItemsSource = Users;
         SendButton.IsDefault=true;
-        Users.Add(new User("Igor", true));
-        Users.Add(new User("Vadim", false));
+        SendButton.IsEnabled=false;
+        Message.IsEnabled=false;
     }
 
-    public void SendMessage(string text, User sender)
-    {
-        var message = new Message { Sender = sender, Text = text, Timestamp = DateTime.Now };
-        Messages.Add(message);
-        // Обновление представления, если необходимо
-    }
-
-    public void AddUser(User user)
-    {
-        Users.Add(user);
-    }
 }

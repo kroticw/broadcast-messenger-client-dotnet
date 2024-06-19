@@ -56,8 +56,8 @@ public class UdpTcpClient
     }
 
     private void ParseAndAction(string receivedMessage) {
-        string[] message = receivedMessage.Split("卐卐卐");
-        if(message[0] == "server"){
+        string[] message = receivedMessage.Split(";;;");
+        if(message[0] == "server" && message[1].Length > 2){
             switch (message[1][..2])
             {
                 case "nu": //новый пользователь
@@ -110,7 +110,7 @@ public class UdpTcpClient
         await StartAsync(); // Перезапуск процесса для нового соединения
     }
 
-    public async Task SendMessageToUserByUsername(string? message, string username)
+    public async Task SendMessageToUserByUsername(string message, string username)
     {
         if (tcpClient == null || !tcpClient.Connected)
         {
@@ -118,10 +118,10 @@ public class UdpTcpClient
             return;
         }
         try{
-            string mes = $"to:{username}卐卐卐{message}";
-            byte[] data = Encoding.UTF8.GetBytes(message);
+            string mes = $"to:{username};;;{message}";
+            byte[] data = Encoding.UTF8.GetBytes(mes);
             await tcpStream.WriteAsync(data, 0, data.Length);
-            Console.WriteLine("Сообщение отправлено: " + message);
+            Console.WriteLine("Сообщение отправлено: " + mes);
         }
         catch(Exception ex)
         {
