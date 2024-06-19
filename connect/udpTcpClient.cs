@@ -46,7 +46,7 @@ public class UdpTcpClient
         IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Broadcast, udpPort);
         byte[] data = Encoding.UTF8.GetBytes($"{Program.SelfUsername};;;{tcpPort}");
         udpClient.EnableBroadcast = true;
-
+        while(Program.SelfUsername == "") {}
         while (!tcpListener.Pending())
         {
             udpClient.Send(data, data.Length, ipEndPoint);
