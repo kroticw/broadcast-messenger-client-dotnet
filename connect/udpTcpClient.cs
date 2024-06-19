@@ -44,11 +44,11 @@ public class UdpTcpClient
     private async Task BroadcastConnectionInfo()
     {
         IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Broadcast, udpPort);
+        byte[] data = Encoding.UTF8.GetBytes($"{Program.SelfUsername};;;{tcpPort}");
         udpClient.EnableBroadcast = true;
 
         while (!tcpListener.Pending())
         {
-            byte[] data = Encoding.UTF8.GetBytes($"{Program.SelfUsername};;;{tcpPort}");
             udpClient.Send(data, data.Length, ipEndPoint);
             Console.WriteLine("Broadcasting connection info...");
             await Task.Delay(1000); // Пауза в 1 секунду между отправками
@@ -76,6 +76,7 @@ public class UdpTcpClient
 
     private async Task HandleTcpConnectionAsync()
     {
+        Console.WriteLine("HandleTcpConnectionAsync");
         try
         {
             while(true) {
