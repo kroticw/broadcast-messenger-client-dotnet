@@ -107,6 +107,7 @@ public partial class MainWindow : Window
             {
                 SendButton.IsEnabled=true;
                 Message.IsEnabled=true;
+                UsersList.IsEnabled=true;
             }
         }
     }
