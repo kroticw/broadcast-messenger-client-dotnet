@@ -1,8 +1,8 @@
 using System;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using broadcast_messenger_client_dotnet;
 
@@ -44,10 +44,18 @@ public class UdpTcpClient
     private async Task BroadcastConnectionInfo()
     {
         IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Broadcast, udpPort);
-        
         udpClient.EnableBroadcast = true;
+
         while(Program.SelfUsername == "") {}
-        byte[] data = Encoding.UTF8.GetBytes($"{Program.SelfUsername};;;{tcpPort}");
+
+        Client client = new Client();
+        string host = Dns.GetHostName();
+        IPHostEntry ip = Dns.GetHostEntry(host);
+        client.ClientIp = ip.AddressList[5].ToString();
+        client.ClientPort = tcpPort.ToString();
+        string json = JsonSerializer.Serialize(client);
+        byte[] data = Encoding.UTF8.GetBytes(json);
+
         while (!tcpListener.Pending())
         {
             udpClient.Send(data, data.Length, ipEndPoint);
@@ -56,39 +64,46 @@ public class UdpTcpClient
         }
     }
 
-    private void ParseAndAction(string receivedMessage) {
-        string[] message = receivedMessage.Split(";;;");
-        Console.WriteLine(message[2]);
-        if(message[0] == "server" && message[1].Length == 2){
-
-            if(message[1].Equals("nu")) {
-                //Console.WriteLine("message[1]");
-                MainWindow.Instance.AppendUserInUserList(message[2]);
-            } else if (message[1].Equals("du")) {
-                MainWindow.Instance.DeleteUserFromUserList(message[2]);
-            } else {
-                MainWindow.Instance.AppendChatMessage($"[{message[2]}]:\n{message[1]}");
+    private void ParseAndAction(ClientServerMessage receivedMessage) {
+        if(receivedMessage.from.Equals("server")){
+            if(receivedMessage.serviceType.Equals("new_user") && !receivedMessage.serviceData.Equals("")) {
+                MainWindow.Instance.AppendChatMessage(receivedMessage.serviceData);
+            } else if (receivedMessage.serviceType.Equals("del_user") && !receivedMessage.serviceData.Equals("")) {
+                MainWindow.Instance.DeleteUserFromUserList(receivedMessage.serviceData);
             }
+        } else if (!receivedMessage.message.Equals("")) {
+            MainWindow.Instance.AppendChatMessage($"[{receivedMessage.from}]:\n{receivedMessage.message}");
         }
-        else MainWindow.Instance.AppendChatMessage($"[{message[0]}]:\n{message[1]}");
     }
 
     private async Task HandleTcpConnectionAsync()
     {
-        Console.WriteLine("HandleTcpConnectionAsync");
+        //Console.WriteLine("HandleTcpConnectionAsync");
         try
         {
             while(true) {
-                byte[] buffer = new byte[1024];
-                int n = await tcpStream.ReadAsync(buffer);
+                byte[] size = new byte[4];
+                int n = await tcpStream.ReadAsync(size);
                 if (n > 0) {
+                    int sizeInInt = BitConverter.ToInt32(size, 0);
+                    byte[] buffer = new byte[sizeInInt];
+
+                    n = await tcpStream.ReadAsync(buffer);
                     if (buffer[0] == 0) continue;
+
                     int newInt = Array.IndexOf(buffer, (byte)0);
                     Console.WriteLine($"n: {newInt}");
+
                     if (newInt != -1) Array.Resize(ref buffer, newInt);
+
                     string receivedMessage = Encoding.UTF8.GetString(buffer);
+                    ClientServerMessage? message = JsonSerializer.Deserialize<ClientServerMessage>(buffer);
+
                     Console.WriteLine($"Received: {receivedMessage}");
-                    ParseAndAction(receivedMessage);
+
+                    if (message != null) {
+                        ParseAndAction(message);
+                    }
                 }
             }
         }

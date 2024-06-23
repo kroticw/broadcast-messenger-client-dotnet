@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
+using connect;
 using models;
 
 namespace broadcast_messenger_client_dotnet;
@@ -84,7 +85,7 @@ public partial class MainWindow : Window
         }
         else if (Chat.Text == "Введите юзернейм" && Message.Text != "")
         {
-            Program.SelfUsername = Message.Text;
+            Client.Username = Message.Text;
             Message.Text = "";
             Chat.Text = "";
             Message.IsEnabled = false;
