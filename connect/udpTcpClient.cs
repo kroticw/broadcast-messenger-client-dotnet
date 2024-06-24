@@ -98,6 +98,7 @@ public class UdpTcpClient
                 int n = await tcpStream.ReadAsync(size);
                 if (n > 0) {
                     int sizeInInt = BitConverter.ToInt32(size, 0);
+                    Console.WriteLine($"sizeInInt: {sizeInInt}");
                     byte[] buffer = new byte[sizeInInt];
 
                     n = await tcpStream.ReadAsync(buffer);
@@ -106,8 +107,8 @@ public class UdpTcpClient
                     int newInt = Array.IndexOf(buffer, (byte)0);
                     Console.WriteLine($"n: {newInt}");
 
-                    // if (newInt != -1)
-                    //     Array.Resize(ref buffer, newInt);
+                    if (newInt != -1)
+                        Array.Resize(ref buffer, newInt);
 
                     string receivedMessage = Encoding.UTF8.GetString(buffer);
                     Console.WriteLine(receivedMessage);
