@@ -8,5 +8,5 @@ public class Client {
     [JsonPropertyName("client_port")]
     public string ClientPort {get; set;}
     [JsonPropertyName("username")]
-    public static string Username = "";
+    public string Username { get; set;}
 }

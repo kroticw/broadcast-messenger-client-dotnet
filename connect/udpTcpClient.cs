@@ -16,6 +16,9 @@ public class UdpTcpClient
     public NetworkStream tcpStream;
     private int tcpPort = 8888; // TCP порт для прослушивания
     private int udpPort = 8889; // UDP порт для broadcast
+    Client client = new Client();
+
+    public static string Username = "";
 
     public UdpTcpClient()
     {
@@ -45,15 +48,17 @@ public class UdpTcpClient
     {
         IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Broadcast, udpPort);
         udpClient.EnableBroadcast = true;
-
-        while(Program.SelfUsername == "") {}
-
-        Client client = new Client();
+        Console.WriteLine("111");
+        while(Username.Equals("")) {}
+        Console.WriteLine($"Username is Set; Username {client.Username}");
+        
         string host = Dns.GetHostName();
         IPHostEntry ip = Dns.GetHostEntry(host);
+        client.Username = Username;
         client.ClientIp = ip.AddressList[5].ToString();
         client.ClientPort = tcpPort.ToString();
         string json = JsonSerializer.Serialize(client);
+        Console.WriteLine(json);
         byte[] data = Encoding.UTF8.GetBytes(json);
 
         while (!tcpListener.Pending())
@@ -94,15 +99,17 @@ public class UdpTcpClient
                     int newInt = Array.IndexOf(buffer, (byte)0);
                     Console.WriteLine($"n: {newInt}");
 
-                    if (newInt != -1) Array.Resize(ref buffer, newInt);
+                    // if (newInt != -1)
+                    //     Array.Resize(ref buffer, newInt);
 
                     string receivedMessage = Encoding.UTF8.GetString(buffer);
+                    Console.WriteLine(receivedMessage);
                     ClientServerMessage? message = JsonSerializer.Deserialize<ClientServerMessage>(buffer);
 
                     Console.WriteLine($"Received: {receivedMessage}");
 
                     ClientServerMessage mes = new ClientServerMessage();
-                    mes.from = Client.Username;
+                    mes.from = client.Username;
                     mes.to = "2";
                     // if (message != null) {
                     //     ParseAndAction(message);
@@ -136,10 +143,16 @@ public class UdpTcpClient
             return;
         }
         try{
-            string mes = $"{Program.SelfUsername};;;{username};;;{message}";
-            byte[] data = Encoding.UTF8.GetBytes(mes);
+            ClientServerMessage mesObj = new ClientServerMessage
+            {
+                from = client.Username,
+                to = username,
+                message = message
+            };
+            string mesJson = JsonSerializer.Serialize(mesObj);
+            byte[] data = Encoding.UTF8.GetBytes(mesJson);
             await tcpStream.WriteAsync(data, 0, data.Length);
-            Console.WriteLine("Сообщение отправлено: " + mes);
+            Console.WriteLine("Сообщение отправлено: " + mesJson);
         }
         catch(Exception ex)
         {

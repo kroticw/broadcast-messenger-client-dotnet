@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
@@ -80,7 +81,7 @@ public partial class MainWindow : Window
     }
 
     public async void ClickSendButtonHandler(object? sender, RoutedEventArgs args) {
-        if (Message.Text != "" && SelectedUser != null && SelectedUser.isOnline)
+        if (Message.Text.Equals("")  && SelectedUser != null && SelectedUser.isOnline)
         {
             string ?mes = Message.Text;
             Chat.Text += $"[ВЫ]:\n{mes}\n";
@@ -89,13 +90,14 @@ public partial class MainWindow : Window
             Message.Text = "";
             ChatScroller.ScrollToEnd();
         }
-        else if (Chat.Text == "Введите юзернейм" && Message.Text != "")
+        else if (Chat.Text.Equals("Введите юзернейм") && !Message.Text.Equals(""))
         {
-            Client.Username = Message.Text;
+            UdpTcpClient.Username = Message.Text;
             Message.Text = "";
             Chat.Text = "";
             Message.IsEnabled = false;
             SendButton.IsEnabled = false;
+            UsersList.IsEnabled=true;
         }
     }
 
