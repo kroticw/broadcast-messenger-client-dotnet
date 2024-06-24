@@ -13,4 +13,9 @@ public class ClientServerMessage {
     public string serviceData="";
     [JsonPropertyName("message")]
     public string message="";
+    [JsonIgnore]
+    public static int lengthFile = 0;
+    [JsonPropertyName("file")]
+    public byte[] file = new byte[lengthFile];
+    
 }

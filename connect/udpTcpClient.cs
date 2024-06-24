@@ -101,9 +101,12 @@ public class UdpTcpClient
 
                     Console.WriteLine($"Received: {receivedMessage}");
 
-                    if (message != null) {
-                        ParseAndAction(message);
-                    }
+                    ClientServerMessage mes = new ClientServerMessage();
+                    mes.from = Client.Username;
+                    mes.to = "2";
+                    // if (message != null) {
+                    //     ParseAndAction(message);
+                    // }
                 }
             }
         }
