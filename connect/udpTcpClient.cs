@@ -67,7 +67,7 @@ public class UdpTcpClient
     private void ParseAndAction(ClientServerMessage receivedMessage) {
         if(receivedMessage.from.Equals("server")){
             if(receivedMessage.serviceType.Equals("new_user") && !receivedMessage.serviceData.Equals("")) {
-                MainWindow.Instance.AppendChatMessage(receivedMessage.serviceData);
+                MainWindow.Instance.AppendUserInUserList(receivedMessage.serviceData);
             } else if (receivedMessage.serviceType.Equals("del_user") && !receivedMessage.serviceData.Equals("")) {
                 MainWindow.Instance.DeleteUserFromUserList(receivedMessage.serviceData);
             }

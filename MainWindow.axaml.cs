@@ -34,16 +34,22 @@ public partial class MainWindow : Window
         {
             bool inList = false;
             int i = 0;
-            while (!inList || i < Users.Count) {
+            // Исправлено условие для корректной проверки в пределах существующих пользователей
+            while (i < Users.Count && !inList) {
                 if (Users[i].Username == username){
                     inList = true;
                 }
                 i++;
             }
-            if(inList) Users[i-1].isOnline = true;
-            else {
-                Users.Add(new User(username, true));
+            if (inList) {
+                Users[i-1].isOnline = true;
+            } else {
+                // Добавление нового пользователя и обновление UI
+                User newUser = new User(username, true);
+                Users.Add(newUser);
                 UsersScroller.ScrollToEnd();
+                // Обновление списка пользователей в UI
+                UsersList.Items.Add(newUser);
             }
         });
     }
