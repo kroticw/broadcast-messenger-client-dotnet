@@ -54,8 +54,15 @@ public class UdpTcpClient
         
         string host = Dns.GetHostName();
         IPHostEntry ip = Dns.GetHostEntry(host);
+        string IP="";
+        foreach (IPAddress ip1 in ip.AddressList){
+            if (ip1.ToString().Contains("192.168")){
+                IP = ip1.ToString();
+            }
+        }
+        
         client.Username = Username;
-        client.ClientIp = ip.AddressList[5].ToString();
+        client.ClientIp = IP;
         client.ClientPort = tcpPort.ToString();
         string json = JsonSerializer.Serialize(client);
         Console.WriteLine(json);
