@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Net;
 using System.Net.Http.Json;
 using System.Net.Sockets;
@@ -79,6 +80,34 @@ public class UdpTcpClient
         }
     }
 
+    byte[] buff = new byte[65536];
+
+    private async Task ReceiveFile(string filename, string filelenght) {
+        using var file = File.Create(filename.Substring(Math.Max(0, filename.Length - 4)));
+        await ReadBytes(sizeof(long));
+        long remainingLength = IPAddress.NetworkToHostOrder(BitConverter.ToInt64(buff, 0));
+
+        while (remainingLength > 0)
+        {
+            int lengthToRead = (int)Math.Min(remainingLength, buff.Length);
+            await ReadBytes(lengthToRead);
+            await file.WriteAsync(buff, 0, lengthToRead);
+            remainingLength -= lengthToRead;
+        }
+    }
+
+    async Task ReadBytes(int howmuch)
+    {
+        int readPos = 0;
+        while (readPos < howmuch)
+        {
+            var actuallyRead = await tcpStream.ReadAsync(buff, readPos, howmuch - readPos);
+            if (actuallyRead == 0)
+                throw new EndOfStreamException();
+            readPos += actuallyRead;
+        }
+    }
+
     private async Task ParseAndAction(ClientServerMessage receivedMessage) {
         //Console.WriteLine($"{receivedMessage.from} {receivedMessage.to} {receivedMessage.serviceType} {receivedMessage.serviceData}");
         if(string.Compare(receivedMessage.from, "server") == 0){
@@ -89,6 +118,8 @@ public class UdpTcpClient
             } else if (string.Compare(receivedMessage.serviceType, "del_user") == 0) {
                 MainWindow.Instance.DeleteUserFromUserList(receivedMessage.serviceData);
             }
+        } else if (string.Compare(receivedMessage.serviceType, "file") == 0) {
+                await ReceiveFile(receivedMessage.serviceType, receivedMessage.serviceType);
         } else {
             MainWindow.Instance.AppendChatMessage($"[{receivedMessage.from}]:\n{receivedMessage.message}");
         }
@@ -170,6 +201,35 @@ public class UdpTcpClient
         catch(Exception ex)
         {
             Console.WriteLine("Ошибка при отправке сообщения: " + ex.Message);
+        }
+    }
+
+    public async Task SendFileToUserByUsername(string filePath, string username)
+    {
+        if (tcpClient == null || !tcpClient.Connected)
+        {
+            Console.WriteLine("TCP клиент не подключен.");
+            return;
+        } 
+        try {
+            using var file = File.OpenRead(filePath);
+            var lengthFile = file.Length;
+            ClientServerMessage mesObj = new ClientServerMessage
+            {
+                from = client.Username,
+                to = username,
+                serviceType = "file",
+                serviceData = lengthFile.ToString(),
+            };
+            string mesJson = JsonConvert.SerializeObject(mesObj);
+            byte[] data = Encoding.UTF8.GetBytes(mesJson);
+            await tcpStream.WriteAsync(data, 0, data.Length);
+            Console.WriteLine("Сообщение отправлено: " + mesJson);
+            await Task.Delay(100);
+            await file.CopyToAsync(tcpStream);
+        } catch(Exception ex)
+        {
+            Console.WriteLine("Ошибка при отправке файла: " + ex.Message);
         }
     }
 }

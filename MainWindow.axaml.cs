@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using connect;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -107,6 +108,20 @@ public partial class MainWindow : Window
         }
     }
 
+    public async void ClickSendFileButtonHandler(object? sender, RoutedEventArgs args) {
+        var storageProvider = this.StorageProvider;
+        var result = await storageProvider.OpenFilePickerAsync(new FilePickerOpenOptions {
+            AllowMultiple = false
+        });
+        if (result != null && result.Count > 0 && SelectedUser != null && SelectedUser.isOnline) {
+            string selectedFilePath = result[0].Path.LocalPath;
+            Console.WriteLine($"Выбранный файл: {selectedFilePath}");
+            string mes = $"[ВЫ]:\nФайлик!!!{selectedFilePath}\n";
+            SelectedUser.AddInHistory(mes);
+            await Program.client.SendFileToUserByUsername(selectedFilePath, SelectedUser.Username);
+        }
+    }
+
     public void UsersList_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (UsersList.SelectedItem is User selectedUser)
@@ -116,6 +131,7 @@ public partial class MainWindow : Window
             UpdateChatForSelectedUser(selectedUser); // Обновление чата для выбранного пользователя
             SendButton.IsEnabled = selectedUser.isOnline; // Активация кнопки отправки, если пользователь онлайн
             Message.IsEnabled = selectedUser.isOnline; // Активация поля ввода сообщения, если пользователь онлайн
+            SendFileButton.IsEnabled = true;
         }
     }
 
@@ -133,6 +149,7 @@ public partial class MainWindow : Window
         Instance = this;
         UsersList.ItemsSource = Users;
         SendButton.IsDefault=true;
+        SendFileButton.IsDefault=false;
         Chat.Text = "Введите юзернейм";
     }
 

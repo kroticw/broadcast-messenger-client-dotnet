@@ -18,10 +18,4 @@ public class ClientServerMessage {
 
     [JsonProperty("message")]
     public string message {get; set;}
-
-    [Newtonsoft.Json.JsonIgnore]
-    public static int lengthFile = 0;
-    [JsonProperty("file")]
-    public byte[] file = new byte[lengthFile];
-    
 }
