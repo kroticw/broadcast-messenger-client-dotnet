@@ -83,7 +83,7 @@ public class UdpTcpClient
     //byte[] buff = new byte[65536];
 
     private async Task ReceiveFile(string filename, string filelength, string type) {
-        using var file = File.Create("file." + type);
+        using var file = File.Create("file" + type);
         int length = int.Parse(filelength);
         byte[] buffer = new byte[4096]; // Буфер для чтения
         int bytesRead;
@@ -93,6 +93,7 @@ public class UdpTcpClient
             await file.WriteAsync(buffer, 0, bytesRead);
             totalRead += bytesRead;
         }
+        Console.WriteLine("File received");
     }
 
 
@@ -200,26 +201,30 @@ public class UdpTcpClient
             return;
         } 
         try {
-            using var file = File.OpenRead(filePath);
-            var lengthFile = file.Length;
+            //using var file = File.OpenRead(filePath);
+            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+
+            var lengthFile = fileBytes.Length;
             ClientServerMessage mesObj = new ClientServerMessage
             {
                 from = client.Username,
                 to = username,
                 serviceType = "file",
                 serviceData = lengthFile.ToString(),
-                message = filePath.Substring(filePath.Length - 3),
+                message = filePath.Substring(filePath.Length - 6),
             };
             string mesJson = JsonConvert.SerializeObject(mesObj);
             byte[] data = Encoding.UTF8.GetBytes(mesJson);
             await tcpStream.WriteAsync(data, 0, data.Length);
             Console.WriteLine("Сообщение отправлено: " + mesJson);
             await Task.Delay(100);
-            byte[] buffer = new byte[4096];
-            int bytesRead;
-            while ((bytesRead = await file.ReadAsync(buffer, 0, buffer.Length)) > 0) {
-                await tcpStream.WriteAsync(buffer, 0, bytesRead);
-            }
+            await tcpStream.WriteAsync(fileBytes);
+            Console.WriteLine("File sending");
+            //byte[] buffer = new byte[4096];
+            // int bytesRead;
+            // while ((bytesRead = await file.ReadAsync(buffer, 0, buffer.Length)) > 0) {
+            //     tcpStream.Write(buffer, 0, bytesRead);
+            // }
         } catch(Exception ex)
         {
             Console.WriteLine("Ошибка при отправке файла: " + ex.Message);
