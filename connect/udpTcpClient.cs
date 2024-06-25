@@ -83,7 +83,7 @@ public class UdpTcpClient
         Console.WriteLine($"{receivedMessage.from} {receivedMessage.to} {receivedMessage.serviceType} {receivedMessage.serviceData}");
         if(string.Compare(receivedMessage.from, "server") == 0){
             Console.WriteLine("SystemMessage");
-            if(string.Compare(receivedMessage.serviceType, "new_user") == 0) {
+            if(string.Compare(receivedMessage.serviceType, "newuser") == 0) {
                 Console.WriteLine(receivedMessage.serviceData);
                 MainWindow.Instance.AppendUserInUserList(receivedMessage.serviceData);
             } else if (string.Compare(receivedMessage.serviceType, "del_user") == 0) {
