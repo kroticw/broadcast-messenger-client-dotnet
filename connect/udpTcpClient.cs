@@ -103,6 +103,7 @@ public class UdpTcpClient
                 byte[] size = new byte[4];
                 int n = tcpStream.Read(size); //считываем длину сообщения
                 if (n > 0) {
+                    if (n == 1) continue;
                     Console.WriteLine($"n {n}"); 
                     int sizeInInt = BitConverter.ToInt32(size, 0);
                     Console.WriteLine($"sizeInInt: {sizeInInt}");
@@ -114,9 +115,8 @@ public class UdpTcpClient
                     Console.WriteLine($"next n {n}");
                     int newInt = Array.IndexOf(buffer, (byte)0);
                     Console.WriteLine($"newInt: {newInt}");
-
                     if (newInt != -1)
-                        Array.Resize(ref buffer, newInt);
+                        Array.Resize(ref buffer, newInt+1);
 
                     string receivedMessage = Encoding.UTF8.GetString(buffer);
                     Console.WriteLine(receivedMessage);

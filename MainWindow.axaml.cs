@@ -95,7 +95,7 @@ public partial class MainWindow : Window
             Message.IsEnabled = false;
             SendButton.IsEnabled = false;
         }
-        else if (Message.Text.Equals(""))
+        else if (!Message.Text.Equals(""))
         {
             string ?mes = Message.Text;
             Chat.Text += $"[ВЫ]:\n{mes}\n";
