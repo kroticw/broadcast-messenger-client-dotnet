@@ -87,7 +87,7 @@ public partial class MainWindow : Window
     }
 
     public async void ClickSendButtonHandler(object? sender, RoutedEventArgs args) {
-        if (Chat.Text.Equals("Введите юзернейм") && !Message.Text.Equals(""))
+        if (Chat.Text.Equals("Введите юзернейм") && !string.IsNullOrWhiteSpace(Message.Text))
         {
             UdpTcpClient.Username = Message.Text;
             Message.Text = "";
@@ -95,15 +95,15 @@ public partial class MainWindow : Window
             Message.IsEnabled = false;
             SendButton.IsEnabled = false;
         }
-        else if (!Message.Text.Equals(""))
+        else if (!string.IsNullOrWhiteSpace(Message.Text) && SelectedUser != null && SelectedUser.isOnline)
         {
-            string ?mes = Message.Text;
-            Chat.Text += $"[ВЫ]:\n{mes}\n";
-            SelectedUser.AddInHistory($"[ВЫ]:\n{mes}\n");
-            Console.WriteLine($"Нажатие кнопки отправления сообщения {mes} юзеру {SelectedUser.Username}");
-            await Program.client.SendMessageToUserByUsername(mes, SelectedUser.Username);
-            Message.Text = "";
-            ChatScroller.ScrollToEnd();
+            string messageToSend = Message.Text;
+            Chat.Text += $"[ВЫ]:\n{messageToSend}\n";
+            SelectedUser.AddInHistory($"[ВЫ]:\n{messageToSend}\n");
+            Console.WriteLine($"Отправка сообщения '{messageToSend}' пользователю {SelectedUser.Username}");
+            await Program.client.SendMessageToUserByUsername(messageToSend, SelectedUser.Username);
+            Message.Text = ""; // Очистка поля ввода после отправки
+            ChatScroller.ScrollToEnd(); // Прокрутка чата вниз
         }
     }
 
@@ -111,19 +111,11 @@ public partial class MainWindow : Window
     {
         if (UsersList.SelectedItem is User selectedUser)
         {
+            SelectedUser = selectedUser; // Сохраняем выбранного пользователя
             UsernameDialog.Content = selectedUser.Username; // Обновление Label с именем пользователя
             UpdateChatForSelectedUser(selectedUser); // Обновление чата для выбранного пользователя
-            if(!selectedUser.isOnline)
-            {
-                SendButton.IsEnabled=false;
-                Message.IsEnabled=false;
-            }
-            else 
-            {
-                SendButton.IsEnabled=true;
-                Message.IsEnabled=true;
-                UsersList.IsEnabled=true;
-            }
+            SendButton.IsEnabled = selectedUser.isOnline; // Активация кнопки отправки, если пользователь онлайн
+            Message.IsEnabled = selectedUser.isOnline; // Активация поля ввода сообщения, если пользователь онлайн
         }
     }
 
@@ -142,7 +134,6 @@ public partial class MainWindow : Window
         UsersList.ItemsSource = Users;
         SendButton.IsDefault=true;
         Chat.Text = "Введите юзернейм";
-        //UsersList.IsEnabled=false;
     }
 
 }
