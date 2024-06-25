@@ -85,21 +85,22 @@ public class UdpTcpClient
     private async Task ReceiveFile(string filename, string filelength, string type) {
         using var file = File.Create("file" + type);
         long length = long.Parse(filelength);
-        byte[] buffer = new byte[4096]; // Буфер для чтения
+        byte[] buffer = new byte[4096*4]; // Буфер для чтения
         int bytesRead;
         long totalRead = 0;
-
         while (totalRead < length && (bytesRead = await tcpStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
         {
             await file.WriteAsync(buffer, 0, bytesRead);
+            
             totalRead += bytesRead;
+            Console.WriteLine(totalRead);
         }
         Console.WriteLine("File received");
     }
 
 
     private async Task ParseAndAction(ClientServerMessage receivedMessage) {
-        //Console.WriteLine($"{receivedMessage.from} {receivedMessage.to} {receivedMessage.serviceType} {receivedMessage.serviceData}");
+        Console.WriteLine($"Parse and Action {receivedMessage.from} {receivedMessage.to} {receivedMessage.serviceType} {receivedMessage.serviceData}");
         if(string.Compare(receivedMessage.from, "server") == 0){
             //Console.WriteLine("SystemMessage");
             if(string.Compare(receivedMessage.serviceType, "new_user") == 0) {
