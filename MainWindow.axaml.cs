@@ -78,11 +78,17 @@ public partial class MainWindow : Window
         });
     }
 
-    public void AppendChatMessage(string message)
+    public void AppendChatMessage(string message, string username)
     {
         Dispatcher.UIThread.InvokeAsync(() =>
         {
-            Chat.Text += message + Environment.NewLine;
+            User? foundUser = Users.FirstOrDefault(user => user.Username == username);
+            if (foundUser != null)
+            {
+                //Chat.Text += $"[{username}]:\n{message}\n";
+                foundUser.AddInHistory($"[{username}]:\n{message}\n");
+            }
+            //Chat.Text += message + Environment.NewLine;
             ChatScroller.ScrollToEnd();
         });
     }

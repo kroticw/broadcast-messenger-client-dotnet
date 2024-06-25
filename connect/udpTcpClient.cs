@@ -111,7 +111,7 @@ public class UdpTcpClient
         } else if (string.Compare(receivedMessage.serviceType, "file") == 0) {
                 await ReceiveFile(receivedMessage.serviceType, receivedMessage.serviceData, receivedMessage.message);
         } else {
-            MainWindow.Instance.AppendChatMessage($"[{receivedMessage.from}]:\n{receivedMessage.message}");
+            MainWindow.Instance.AppendChatMessage($"[{receivedMessage.from}]:\n{receivedMessage.message}", receivedMessage.from);
         }
     }
 
