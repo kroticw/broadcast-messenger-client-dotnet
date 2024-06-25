@@ -161,7 +161,7 @@ public class UdpTcpClient
                 to = username,
                 message = message
             };
-            string mesJson = System.Text.Json.JsonSerializer.Serialize(mesObj);
+            string mesJson = JsonConvert.SerializeObject(mesObj);
             byte[] data = Encoding.UTF8.GetBytes(mesJson);
             await tcpStream.WriteAsync(data, 0, data.Length);
             Console.WriteLine("Сообщение отправлено: " + mesJson);

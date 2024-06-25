@@ -9,6 +9,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using connect;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using models;
 
 namespace broadcast_messenger_client_dotnet;
@@ -55,7 +56,7 @@ public partial class MainWindow : Window
                 //UsersScroller.ScrollToEnd();
                 // Обновление списка пользователей в UI
                 UsersList.Items.Add(newUser);
-                
+
             }
         });
     }
@@ -86,23 +87,23 @@ public partial class MainWindow : Window
     }
 
     public async void ClickSendButtonHandler(object? sender, RoutedEventArgs args) {
-        if (Message.Text.Equals("")  && SelectedUser != null && SelectedUser.isOnline)
-        {
-            string ?mes = Message.Text;
-            Chat.Text += $"[ВЫ]:\n{mes}\n";
-            SelectedUser.AddInHistory($"[ВЫ]:\n{mes}\n");
-            await Program.client.SendMessageToUserByUsername(mes, SelectedUser.Username);
-            Message.Text = "";
-            ChatScroller.ScrollToEnd();
-        }
-        else if (Chat.Text.Equals("Введите юзернейм") && !Message.Text.Equals(""))
+        if (Chat.Text.Equals("Введите юзернейм") && !Message.Text.Equals(""))
         {
             UdpTcpClient.Username = Message.Text;
             Message.Text = "";
             Chat.Text = "";
             Message.IsEnabled = false;
             SendButton.IsEnabled = false;
-            UsersList.IsEnabled=true;
+        }
+        else if (Message.Text.Equals(""))
+        {
+            string ?mes = Message.Text;
+            Chat.Text += $"[ВЫ]:\n{mes}\n";
+            SelectedUser.AddInHistory($"[ВЫ]:\n{mes}\n");
+            Console.WriteLine($"Нажатие кнопки отправления сообщения {mes} юзеру {SelectedUser.Username}");
+            await Program.client.SendMessageToUserByUsername(mes, SelectedUser.Username);
+            Message.Text = "";
+            ChatScroller.ScrollToEnd();
         }
     }
 

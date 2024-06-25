@@ -1,26 +1,27 @@
 using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace connect;
 
 public class ClientServerMessage {
-    [JsonPropertyName("from")]
-    public string from="";
+    [JsonProperty("from")]
+    public string from {get; set;}
 
-    [JsonPropertyName("to")]
-    public string to="";
+    [JsonProperty("to")]
+    public string to {get; set;}
 
-    [JsonPropertyName("servtype")]
-    public string serviceType="";
+    [JsonProperty("servtype")]
+    public string serviceType {get; set;}
 
-    [JsonPropertyName("servdata")]
-    public string serviceData="";
+    [JsonProperty("servdata")]
+    public string serviceData {get; set;}
 
-    [JsonPropertyName("message")]
-    public string message="";
+    [JsonProperty("message")]
+    public string message {get; set;}
 
-    [JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
     public static int lengthFile = 0;
-    [JsonPropertyName("file")]
+    [JsonProperty("file")]
     public byte[] file = new byte[lengthFile];
     
 }

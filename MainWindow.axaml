@@ -29,7 +29,7 @@
         <Border Grid.Row="1" BorderBrush="Black" BorderThickness="0.5" VerticalAlignment="Stretch">
             <ScrollViewer VerticalScrollBarVisibility="Auto" x:Name="UsersScroller">
                 <StackPanel Grid.Row="1" VerticalAlignment="Stretch">
-                    <ListBox ScrollViewer.VerticalScrollBarVisibility="Visible" x:Name="UsersList" Height="630" VerticalAlignment="Stretch" SelectionChanged="UsersList_SelectionChanged">
+                    <ListBox ScrollViewer.VerticalScrollBarVisibility="Visible" x:Name="UsersList" VerticalAlignment="Top" SelectionChanged="UsersList_SelectionChanged">
                         <ListBox.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <VirtualizingStackPanel VerticalAlignment="Bottom" />
