@@ -84,7 +84,7 @@ public class UdpTcpClient
 
     private async Task ReceiveFile(string filename, string filelenght) {
         using var file = File.Create(filename.Substring(Math.Max(0, filename.Length - 4)));
-        await ReadBytes(sizeof(long));
+        //await ReadBytes(sizeof(long));
         long remainingLength = IPAddress.NetworkToHostOrder(BitConverter.ToInt64(buff, 0));
 
         while (remainingLength > 0)
