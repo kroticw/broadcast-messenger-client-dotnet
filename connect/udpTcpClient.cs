@@ -129,8 +129,9 @@ public class UdpTcpClient
                     Console.WriteLine($"next n {n}");
                     int newInt = Array.IndexOf(buffer, (byte)0);
                     Console.WriteLine($"newInt: {newInt}");
-                    if (newInt != -1)
-                        Array.Resize(ref buffer, newInt+1);
+                    
+                    if (newInt != -1) continue;
+                    //     Array.Resize(ref buffer, newInt+1);
 
                     string receivedMessage = Encoding.UTF8.GetString(buffer);
                     Console.WriteLine(receivedMessage);
