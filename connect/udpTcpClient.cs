@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using broadcast_messenger_client_dotnet;
+using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 
 namespace connect;
@@ -78,14 +79,17 @@ public class UdpTcpClient
         }
     }
 
-    private void ParseAndAction(ClientServerMessage receivedMessage) {
-        if(receivedMessage.from.Equals("server")){
-            if(receivedMessage.serviceType.Equals("new_user") && !receivedMessage.serviceData.Equals("")) {
+    private async Task ParseAndAction(ClientServerMessage receivedMessage) {
+        Console.WriteLine($"{receivedMessage.from} {receivedMessage.to} {receivedMessage.serviceType} {receivedMessage.serviceData}");
+        if(string.Compare(receivedMessage.from, "server") == 0){
+            Console.WriteLine("SystemMessage");
+            if(string.Compare(receivedMessage.serviceType, "new_user") == 0) {
+                Console.WriteLine(receivedMessage.serviceData);
                 MainWindow.Instance.AppendUserInUserList(receivedMessage.serviceData);
-            } else if (receivedMessage.serviceType.Equals("del_user") && !receivedMessage.serviceData.Equals("")) {
+            } else if (string.Compare(receivedMessage.serviceType, "del_user") == 0) {
                 MainWindow.Instance.DeleteUserFromUserList(receivedMessage.serviceData);
             }
-        } else if (!receivedMessage.message.Equals("")) {
+        } else {
             MainWindow.Instance.AppendChatMessage($"[{receivedMessage.from}]:\n{receivedMessage.message}");
         }
     }
@@ -117,10 +121,10 @@ public class UdpTcpClient
                     ClientServerMessage? message = JsonConvert.DeserializeObject<ClientServerMessage>(receivedMessage);
                     //ClientServerMessage? message = JsonSerializer.Deserialize<ClientServerMessage>(buffer);
 
-                    Console.WriteLine($"Received: {receivedMessage}");
+                    Console.WriteLine($"Received: {message.from}");
 
-                    if (message != null) {
-                        ParseAndAction(message);
+                    if (message.from != "") {
+                        await ParseAndAction(message);
                     }
                 }
             }

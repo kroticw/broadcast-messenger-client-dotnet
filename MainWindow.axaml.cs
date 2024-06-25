@@ -33,8 +33,10 @@ public partial class MainWindow : Window
     {
         Dispatcher.UIThread.InvokeAsync(() =>
         {
+            Console.WriteLine($"AppendFunc {username}");
             bool inList = false;
             int i = 0;
+            Console.WriteLine($"len UsersList {Users.Count}");
             // Исправлено условие для корректной проверки в пределах существующих пользователей
             while (i < Users.Count && !inList) {
                 if (Users[i].Username == username){
@@ -43,14 +45,17 @@ public partial class MainWindow : Window
                 i++;
             }
             if (inList) {
+                Console.WriteLine("InList");
                 Users[i-1].isOnline = true;
             } else {
+                Console.WriteLine("AddToList");
                 // Добавление нового пользователя и обновление UI
                 User newUser = new User(username, true);
                 Users.Add(newUser);
-                UsersScroller.ScrollToEnd();
+                //UsersScroller.ScrollToEnd();
                 // Обновление списка пользователей в UI
                 UsersList.Items.Add(newUser);
+                
             }
         });
     }
