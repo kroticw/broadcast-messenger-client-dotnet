@@ -82,36 +82,14 @@ public class UdpTcpClient
 
     //byte[] buff = new byte[65536];
 
-    private async Task ReceiveFile(string filename, string filelenght) {
-        using var file = File.Create("file");
+    private async Task ReceiveFile(string filename, string filelenght, string type) {
+        using var file = File.Create("file." + type);
 
         byte[] buf = new byte[int.Parse(filelenght)];
         await tcpStream.ReadAsync(buf);
         await file.WriteAsync(buf);
-    
-        //await ReadBytes(sizeof(long));
-        // long remainingLength = IPAddress.NetworkToHostOrder(BitConverter.ToInt64(buff, 0));
-
-        // while (remainingLength > 0)
-        // {
-        //     int lengthToRead = (int)Math.Min(remainingLength, buff.Length);
-        //     await ReadBytes(lengthToRead);
-        //     await file.WriteAsync(buff, 0, lengthToRead);
-        //     remainingLength -= lengthToRead;
-        // }
     }
 
-    // async Task ReadBytes(int howmuch)
-    // {
-    //     int readPos = 0;
-    //     while (readPos < howmuch)
-    //     {
-    //         var actuallyRead = await tcpStream.ReadAsync(buff, readPos, howmuch - readPos);
-    //         if (actuallyRead == 0)
-    //             throw new EndOfStreamException();
-    //         readPos += actuallyRead;
-    //     }
-    // }
 
     private async Task ParseAndAction(ClientServerMessage receivedMessage) {
         //Console.WriteLine($"{receivedMessage.from} {receivedMessage.to} {receivedMessage.serviceType} {receivedMessage.serviceData}");
@@ -124,7 +102,7 @@ public class UdpTcpClient
                 MainWindow.Instance.DeleteUserFromUserList(receivedMessage.serviceData);
             }
         } else if (string.Compare(receivedMessage.serviceType, "file") == 0) {
-                await ReceiveFile(receivedMessage.serviceType, receivedMessage.serviceType);
+                await ReceiveFile(receivedMessage.serviceType, receivedMessage.serviceType, receivedMessage.message);
         } else {
             MainWindow.Instance.AppendChatMessage($"[{receivedMessage.from}]:\n{receivedMessage.message}");
         }
@@ -225,6 +203,7 @@ public class UdpTcpClient
                 to = username,
                 serviceType = "file",
                 serviceData = lengthFile.ToString(),
+                message = filePath.Substring(filePath.Length - 3),
             };
             string mesJson = JsonConvert.SerializeObject(mesObj);
             byte[] data = Encoding.UTF8.GetBytes(mesJson);
