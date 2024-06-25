@@ -198,16 +198,18 @@ public class UdpTcpClient
     public async Task SendLargeFile(string filePath)
     {
         using var fileStream = File.OpenRead(filePath);
-        long fileSize = fileStream.Length;
-        byte[] sizeBytes = BitConverter.GetBytes(fileSize);
-        await tcpStream.WriteAsync(sizeBytes, 0, sizeBytes.Length);
+        //long fileSize = fileStream.Length;
+        // byte[] sizeBytes = BitConverter.GetBytes(fileSize);
+        // await tcpStream.WriteAsync(sizeBytes, 0, sizeBytes.Length);
 
         byte[] buffer = new byte[4096];
         int bytesRead;
         while ((bytesRead = await fileStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
         {
             await tcpStream.WriteAsync(buffer, 0, bytesRead);
+            //Console.WriteLine(bytesRead);
         }
+        Console.WriteLine("write file end");
     }
 
     public async Task SendFileToUserByUsername(string filePath, string username)
