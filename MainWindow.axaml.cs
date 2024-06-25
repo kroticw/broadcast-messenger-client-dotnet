@@ -142,7 +142,7 @@ public partial class MainWindow : Window
         UsersList.ItemsSource = Users;
         SendButton.IsDefault=true;
         Chat.Text = "Введите юзернейм";
-        UsersList.IsEnabled=false;
+        //UsersList.IsEnabled=false;
     }
 
 }

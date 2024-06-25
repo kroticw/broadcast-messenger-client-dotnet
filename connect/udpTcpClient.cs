@@ -101,32 +101,33 @@ public class UdpTcpClient
         {
             while(true) {
                 byte[] size = new byte[4];
-                int n = await tcpStream.ReadAsync(size);
+                int n = tcpStream.Read(size); //считываем длину сообщения
                 if (n > 0) {
+                    Console.WriteLine($"n {n}"); 
                     int sizeInInt = BitConverter.ToInt32(size, 0);
                     Console.WriteLine($"sizeInInt: {sizeInInt}");
                     byte[] buffer = new byte[sizeInInt];
 
-                    n = await tcpStream.ReadAsync(buffer);
-                    if (buffer[0] == 0) continue;
-
+                    n = await tcpStream.ReadAsync(buffer); //считываем сообщение
+                    if (buffer[0] == (byte)0) continue;
+                    
+                    Console.WriteLine($"next n {n}");
                     int newInt = Array.IndexOf(buffer, (byte)0);
-                    Console.WriteLine($"n: {newInt}");
+                    Console.WriteLine($"newInt: {newInt}");
 
                     if (newInt != -1)
                         Array.Resize(ref buffer, newInt);
 
                     string receivedMessage = Encoding.UTF8.GetString(buffer);
                     Console.WriteLine(receivedMessage);
+                    
                     ClientServerMessage? message = JsonConvert.DeserializeObject<ClientServerMessage>(receivedMessage);
-                    //ClientServerMessage? message = JsonSerializer.Deserialize<ClientServerMessage>(buffer);
-
-                    Console.WriteLine($"Received: {message.from}");
-
+                    
                     if (message.from != "") {
                         await ParseAndAction(message);
                     }
                 }
+                await Task.Delay(200);
             }
         }
         catch (Exception ex)
