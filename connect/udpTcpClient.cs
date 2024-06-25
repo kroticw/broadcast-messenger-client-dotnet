@@ -1,10 +1,12 @@
 using System;
 using System.Net;
+using System.Net.Http.Json;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using broadcast_messenger_client_dotnet;
+using Newtonsoft.Json;
 
 namespace connect;
 
@@ -64,7 +66,7 @@ public class UdpTcpClient
         client.Username = Username;
         client.ClientIp = IP;
         client.ClientPort = tcpPort.ToString();
-        string json = JsonSerializer.Serialize(client);
+        string json = System.Text.Json.JsonSerializer.Serialize(client);
         Console.WriteLine(json);
         byte[] data = Encoding.UTF8.GetBytes(json);
 
@@ -112,7 +114,8 @@ public class UdpTcpClient
 
                     string receivedMessage = Encoding.UTF8.GetString(buffer);
                     Console.WriteLine(receivedMessage);
-                    ClientServerMessage? message = JsonSerializer.Deserialize<ClientServerMessage>(buffer);
+                    ClientServerMessage? message = JsonConvert.DeserializeObject<ClientServerMessage>(receivedMessage);
+                    //ClientServerMessage? message = JsonSerializer.Deserialize<ClientServerMessage>(buffer);
 
                     Console.WriteLine($"Received: {receivedMessage}");
 
@@ -154,7 +157,7 @@ public class UdpTcpClient
                 to = username,
                 message = message
             };
-            string mesJson = JsonSerializer.Serialize(mesObj);
+            string mesJson = System.Text.Json.JsonSerializer.Serialize(mesObj);
             byte[] data = Encoding.UTF8.GetBytes(mesJson);
             await tcpStream.WriteAsync(data, 0, data.Length);
             Console.WriteLine("Сообщение отправлено: " + mesJson);
