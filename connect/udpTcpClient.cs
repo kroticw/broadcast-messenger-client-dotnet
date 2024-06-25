@@ -82,12 +82,17 @@ public class UdpTcpClient
 
     //byte[] buff = new byte[65536];
 
-    private async Task ReceiveFile(string filename, string filelenght, string type) {
+    private async Task ReceiveFile(string filename, string filelength, string type) {
         using var file = File.Create("file." + type);
+        int length = int.Parse(filelength);
+        byte[] buffer = new byte[4096]; // Буфер для чтения
+        int bytesRead;
+        int totalRead = 0;
 
-        byte[] buf = new byte[int.Parse(filelenght)];
-        await tcpStream.ReadAsync(buf);
-        await file.WriteAsync(buf);
+        while (totalRead < length && (bytesRead = await tcpStream.ReadAsync(buffer, 0, buffer.Length)) > 0) {
+            await file.WriteAsync(buffer, 0, bytesRead);
+            totalRead += bytesRead;
+        }
     }
 
 
@@ -137,7 +142,6 @@ public class UdpTcpClient
                     Console.WriteLine(receivedMessage);
                     
                     ClientServerMessage? message = JsonConvert.DeserializeObject<ClientServerMessage>(receivedMessage);
-                    
                     if (message.from != "") {
                         await ParseAndAction(message);
                     }
@@ -211,7 +215,11 @@ public class UdpTcpClient
             await tcpStream.WriteAsync(data, 0, data.Length);
             Console.WriteLine("Сообщение отправлено: " + mesJson);
             await Task.Delay(100);
-            await file.CopyToAsync(tcpStream);
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = await file.ReadAsync(buffer, 0, buffer.Length)) > 0) {
+                await tcpStream.WriteAsync(buffer, 0, bytesRead);
+            }
         } catch(Exception ex)
         {
             Console.WriteLine("Ошибка при отправке файла: " + ex.Message);
