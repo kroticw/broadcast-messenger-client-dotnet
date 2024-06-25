@@ -80,33 +80,38 @@ public class UdpTcpClient
         }
     }
 
-    byte[] buff = new byte[65536];
+    //byte[] buff = new byte[65536];
 
     private async Task ReceiveFile(string filename, string filelenght) {
-        using var file = File.Create(filename.Substring(Math.Max(0, filename.Length - 4)));
+        using var file = File.Create("file");
+
+        byte[] buf = new byte[int.Parse(filelenght)];
+        await tcpStream.ReadAsync(buf);
+        await file.WriteAsync(buf);
+    
         //await ReadBytes(sizeof(long));
-        long remainingLength = IPAddress.NetworkToHostOrder(BitConverter.ToInt64(buff, 0));
+        // long remainingLength = IPAddress.NetworkToHostOrder(BitConverter.ToInt64(buff, 0));
 
-        while (remainingLength > 0)
-        {
-            int lengthToRead = (int)Math.Min(remainingLength, buff.Length);
-            await ReadBytes(lengthToRead);
-            await file.WriteAsync(buff, 0, lengthToRead);
-            remainingLength -= lengthToRead;
-        }
+        // while (remainingLength > 0)
+        // {
+        //     int lengthToRead = (int)Math.Min(remainingLength, buff.Length);
+        //     await ReadBytes(lengthToRead);
+        //     await file.WriteAsync(buff, 0, lengthToRead);
+        //     remainingLength -= lengthToRead;
+        // }
     }
 
-    async Task ReadBytes(int howmuch)
-    {
-        int readPos = 0;
-        while (readPos < howmuch)
-        {
-            var actuallyRead = await tcpStream.ReadAsync(buff, readPos, howmuch - readPos);
-            if (actuallyRead == 0)
-                throw new EndOfStreamException();
-            readPos += actuallyRead;
-        }
-    }
+    // async Task ReadBytes(int howmuch)
+    // {
+    //     int readPos = 0;
+    //     while (readPos < howmuch)
+    //     {
+    //         var actuallyRead = await tcpStream.ReadAsync(buff, readPos, howmuch - readPos);
+    //         if (actuallyRead == 0)
+    //             throw new EndOfStreamException();
+    //         readPos += actuallyRead;
+    //     }
+    // }
 
     private async Task ParseAndAction(ClientServerMessage receivedMessage) {
         //Console.WriteLine($"{receivedMessage.from} {receivedMessage.to} {receivedMessage.serviceType} {receivedMessage.serviceData}");
