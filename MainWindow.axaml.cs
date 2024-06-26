@@ -87,6 +87,7 @@ public partial class MainWindow : Window
             {
                 //Chat.Text += $"[{username}]:\n{message}\n";
                 foundUser.AddInHistory($"[{username}]:\n{message}\n");
+                Chat.Text = foundUser.History;
             }
             //Chat.Text += message + Environment.NewLine;
             ChatScroller.ScrollToEnd();
