@@ -85,7 +85,7 @@ public class UdpTcpClient
     private async Task ReceiveFile(string filename, string filelength, string type) {
         using var file = File.Create("file" + type);
         long length = long.Parse(filelength);
-        byte[] buffer = new byte[4096*4]; // Буфер для чтения
+        byte[] buffer = new byte[4096]; // Буфер для чтения
         int bytesRead;
         long totalRead = 0;
         while (totalRead < length && (bytesRead = await tcpStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
@@ -207,7 +207,7 @@ public class UdpTcpClient
         while ((bytesRead = await fileStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
         {
             await tcpStream.WriteAsync(buffer, 0, bytesRead);
-            //Console.WriteLine(bytesRead);
+            Console.WriteLine(bytesRead);
         }
         Console.WriteLine("write file end");
     }
