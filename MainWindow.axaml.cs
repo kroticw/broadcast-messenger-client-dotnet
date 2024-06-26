@@ -85,12 +85,13 @@ public partial class MainWindow : Window
             User? foundUser = Users.FirstOrDefault(user => user.Username == username);
             if (foundUser != null)
             {
-                //Chat.Text += $"[{username}]:\n{message}\n";
-                foundUser.AddInHistory($"[{username}]:\n{message}\n");
-                Chat.Text = foundUser.History;
+                foundUser.AddInHistory(message);
+                if (SelectedUser == foundUser) {
+                    Chat.Text = foundUser.History;
+                    ChatScroller.ScrollToEnd();
+                }
             }
             //Chat.Text += message + Environment.NewLine;
-            ChatScroller.ScrollToEnd();
         });
     }
 
